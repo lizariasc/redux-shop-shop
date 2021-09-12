@@ -6,11 +6,13 @@ import React, { createContext, useContext } from "react";
  const { Provider } = StoreContext;
 
  const StoreProvider = ({ value = [], ...props }) => {
-     const [state, dispatch] = useProductReducer({
-         products: [],
-         categories: [],
-         currentCategory: '',
-     });
+    const [state, dispatch] = useProductReducer({
+        products: [],
+        cart: [],
+        cartOpen: false,
+        categories: [],
+        currentCategory: ''
+      });
      console.log(state);
      return <Provider value={[state, dispatch]} {...props} />;
  };
