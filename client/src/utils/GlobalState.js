@@ -19,4 +19,4 @@ import React, { createContext, useContext } from "react";
      return useContext(StoreContext);
  };
 
- export { StoreProvider, StoreContext, useStoreContext };
+ export { StoreProvider, useStoreContext };
