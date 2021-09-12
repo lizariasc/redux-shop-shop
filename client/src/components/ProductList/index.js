@@ -1,35 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import { useQuery } from '@apollo/react-hooks';
-import { idbPromise } from "../../utils/helpers";
 
 import ProductItem from "../ProductItem";
-import { useStoreContext } from "../../utils/GlobalState";
-import { UPDATE_PRODUCTS } from "../../utils/actions";
 import { QUERY_PRODUCTS } from "../../utils/queries";
 import spinner from "../../assets/spinner.gif"
 
+import { UPDATE_PRODUCTS } from "../../utils/actions";
+
+import { idbPromise } from "../../utils/helpers";
+
+import { useDispatch, useSelector } from 'react-redux';
+
 function ProductList() {
-  const [state, dispatch] = useStoreContext();
+
+  const state = useSelector((state) => {
+    return state;
+  });
+  const dispatch = useDispatch();
 
   const { currentCategory } = state;
-
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
   useEffect(() => {
-    if(data) {
+    // when there is data to be stored
+    if (data) {
+      // store in the global state object
       dispatch({
         type: UPDATE_PRODUCTS,
         products: data.products
       });
-  
+      // and store it in IndexedDB
       data.products.forEach((product) => {
         idbPromise('products', 'put', product);
       });
-      // add else if to check if `loading` is undefined in `useQuery()` Hook
     } else if (!loading) {
-      // since we're offline, get all of the data from the `products` store
+      // if loading is undefined, the user is offline - get data from the `products` store in IndexedDB
       idbPromise('products', 'get').then((products) => {
-        // use retrieved data to set global state for offline browsing
+        // use the IndexedDB data to set the global state for offline browsing
         dispatch({
           type: UPDATE_PRODUCTS,
           products: products
@@ -37,7 +44,6 @@ function ProductList() {
       });
     }
   }, [data, loading, dispatch]);
-  
 
   function filterProducts() {
     if (!currentCategory) {
